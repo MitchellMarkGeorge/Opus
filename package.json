@@ -1,0 +1,65 @@
+{
+  "name": "opus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "npm-run-all -p dev:react electron:serve",
+    "dev:electron": "cross-env NODE_ENV=development webpack --config webpack/electron.webpack.ts --mode=development && npm run start:electron",
+    "dev:react": "cross-env NODE_ENV=development webpack serve --config webpack/react.webpack.ts --mode=development",
+    "electron:serve": "wait-on http-get://localhost:4000/ && npm run dev:electron",
+    "start:electron": "electron .",
+    "build": "npm-run-all build:electron build:react",
+    "build:run": "npm-run-all build start:electron",
+    "build:electron": "webpack --config webpack/electron.webpack.ts --mode=production",
+    "build:react": "webpack --config webpack/react.webpack.ts --mode=production",
+    "package": "npm-run-all build package:dist",
+    "package:dist": "electron-builder --dir"
+  },
+  "keywords": [],
+  "author": "Mitchell Mark-George",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.11.2",
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "^18.0.6",
+    "@types/webpack-dev-server": "^4.7.2",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
+    "cross-env": "^7.0.3",
+    "electron": "^21.2.0",
+    "electron-builder": "^23.6.0",
+    "eslint": "^8.25.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-react": "^7.31.10",
+    "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.6.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.7.1",
+    "ts-loader": "^9.4.1",
+    "typescript": "^4.8.4",
+    "wait-on": "^6.0.1",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.11.1"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zustand": "^4.1.2"
+  },
+  "build": {
+    "appId": "com.company.app",
+    "productName": "Opus",
+    "mac": {
+      "category": "public.app-category.video"
+    },
+    "directories": {
+      "output": "packages"
+    },
+    "files": [
+      "package.json",
+      "dist/**"
+    ]
+  }
+}

@@ -1,0 +1,3 @@
+class TabView {
+    constructor() {}
+}
