@@ -1,5 +1,5 @@
 import React from "react";
-import styled, { useTheme } from "styled-components";
+import styled from "styled-components";
 import { TAB_BAR_HEIGHT } from "../../../common/constants";
 import Tab from "./components/Tab";
 import { TrafficLightButton } from "./components/TrafficLightButton";
@@ -13,12 +13,13 @@ const TabBarContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
   padding-left: 12px;
   padding-right: 12px;
   padding-top: 10px;
   padding-bottom: 10px;
   background-color: ${(props) => props.theme.colors.primaryInterfaceColor};
+transition: filter 1s;
   -webkit-app-region: drag;
   user-select: none;
 `;
@@ -43,7 +44,7 @@ const TabList = styled.div`
   padding-left: 12px;
   padding-right: 12px;
   gap: 10px;
-  flex: auto;
+  /* flex: auto; */
   /* min-width: 0; */
   
   /* width: 100%; */
@@ -58,8 +59,18 @@ const TabList = styled.div`
 const CreateTabContainer = styled.div`
     height: 24px;
     width: 24px;
-    padding-left: 5px;
-    padding-right: 5px;
+    // think about this
+    color: ${(props) => props.theme.colors.primaryWhite};
+    border-radius: 50%;
+
+    transition: background-color 1s, color 1s;
+    
+    &:hover {
+        background-color: ${(props) => props.theme.colors.secondaryInterfaceColor};
+        /* color: ${(props) => props.theme.colors.primaryInterfaceColor}; */
+    }
+    /* /* padding-left: 5px; */
+    margin-left: 5px; 
 `
 
 const genTabs = (n?: number) => {
@@ -71,7 +82,7 @@ const genTabs = (n?: number) => {
   for (let i = 0; i < n; i++) {
     tabs[i] = {
       id: i.toString(),
-      title: "New Tab",
+      title: "New Tab".repeat(i),
       url: "https://hello.com",
       isLoading: false,
     };
@@ -81,7 +92,6 @@ const genTabs = (n?: number) => {
 };
 
 export default function TabBar() {
-  const { colors } = useTheme();
   return (
     <TabBarContainer>
       <WindowButtons>
@@ -90,7 +100,7 @@ export default function TabBar() {
         <TrafficLightButton buttonColor="#52BD95" />
       </WindowButtons>
       <TabList>
-        {genTabs(15).map((info, i) => (
+        {genTabs(20).map((info, i) => (
           <Tab isSelected={i === 0} data={info} key={info.id} />
         ))}
         {/* <Tab
@@ -115,7 +125,7 @@ export default function TabBar() {
         /> */}
       </TabList>
       <CreateTabContainer>
-        <AiOutlinePlus color={colors.primaryWhite} size="24px"/>
+        <AiOutlinePlus size="24px"/>
       </CreateTabContainer>
     </TabBarContainer>
   );
