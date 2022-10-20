@@ -2,7 +2,7 @@
   "name": "opus",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/index.js",
+  "main": "./dist/main.js",
   "scripts": {
     "dev": "npm-run-all -p dev:react electron:serve",
     "dev:electron": "cross-env NODE_ENV=development webpack --config webpack/electron.webpack.ts --mode=development && npm run start:electron",
@@ -23,9 +23,11 @@
     "@types/node": "^18.11.2",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
+    "@types/styled-components": "^5.1.26",
     "@types/webpack-dev-server": "^4.7.2",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
+    "copy-webpack-plugin": "^11.0.0",
     "cross-env": "^7.0.3",
     "electron": "^21.2.0",
     "electron-builder": "^23.6.0",
@@ -37,6 +39,7 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
     "ts-loader": "^9.4.1",
+    "ts-node": "^10.9.1",
     "typescript": "^4.8.4",
     "wait-on": "^6.0.1",
     "webpack": "^5.74.0",
@@ -44,8 +47,11 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
+    "@react-icons/all-files": "^4.1.0",
+    "nanoid": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "styled-components": "^5.3.6",
     "zustand": "^4.1.2"
   },
   "build": {

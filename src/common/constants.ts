@@ -1,0 +1,3 @@
+export const SEARCH_BAR_HEIGHT = 60;
+export const TAB_BAR_HEIGHT = 60
+export const TOP_BAR_HEIGHT = TAB_BAR_HEIGHT + SEARCH_BAR_HEIGHT;
