@@ -35,6 +35,10 @@ const TabPill = styled.div<{ isSelected: boolean }>`
   &:hover {
     filter: brightness(1.2);
   }
+
+  &:active {
+    filter: brightness(1.4);
+  }
 `;
 
 const TabTitle = styled.div`

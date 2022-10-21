@@ -1,15 +1,20 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
 interface Props {
-    buttonColor: string;
+  buttonColor: string;
 }
 export const TrafficLightButton = styled.div<Props>`
-    background-color: ${(props) => props.buttonColor};
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
+  background-color: ${(props) => props.buttonColor};
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  transition: filter 1s;
 
-    &:hover {
-        filter: brightness(0.80);
-    }
-`
+  &:hover {
+    filter: brightness(0.9);
+  }
+
+  &:active {
+    filter: brightness(0.7);
+  }
+`;

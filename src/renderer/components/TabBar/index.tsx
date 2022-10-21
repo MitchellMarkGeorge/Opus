@@ -19,7 +19,7 @@ const TabBarContainer = styled.div`
   padding-top: 10px;
   padding-bottom: 10px;
   background-color: ${(props) => props.theme.colors.primaryInterfaceColor};
-transition: filter 1s;
+  transition: filter 1s;
   -webkit-app-region: drag;
   user-select: none;
 `;
@@ -46,7 +46,7 @@ const TabList = styled.div`
   gap: 10px;
   /* flex: auto; */
   /* min-width: 0; */
-  
+
   /* width: 100%; */
   /* height: 100%; */
   overflow-y: auto;
@@ -57,21 +57,25 @@ const TabList = styled.div`
 `;
 
 const CreateTabContainer = styled.div`
-    height: 24px;
-    width: 24px;
-    // think about this
-    color: ${(props) => props.theme.colors.primaryWhite};
-    border-radius: 50%;
+  height: 24px;
+  width: 24px;
+  // think about this
+  color: ${(props) => props.theme.colors.primaryWhite};
+  border-radius: 50%;
 
-    transition: background-color 1s, color 1s;
-    
-    &:hover {
-        background-color: ${(props) => props.theme.colors.secondaryInterfaceColor};
-        /* color: ${(props) => props.theme.colors.primaryInterfaceColor}; */
-    }
-    /* /* padding-left: 5px; */
-    margin-left: 5px; 
-`
+  transition: background-color 1s, color 1s;
+
+  &:hover {
+    background-color: ${(props) => props.theme.colors.secondaryInterfaceColor};
+    /* color: ${(props) => props.theme.colors.primaryInterfaceColor}; */
+  }
+
+  &:active {
+    filter: brightness(0.8);
+  }
+  /* /* padding-left: 5px; */
+  margin-left: 5px;
+`;
 
 const genTabs = (n?: number) => {
   if (!n) {
@@ -100,14 +104,14 @@ export default function TabBar() {
         <TrafficLightButton buttonColor="#52BD95" />
       </WindowButtons>
       <TabList>
-        {genTabs(20).map((info, i) => (
+        {/* {genTabs(20).map((info, i) => (
           <Tab isSelected={i === 0} data={info} key={info.id} />
-        ))}
-        {/* <Tab
+        ))} */}
+        <Tab
           isSelected
           // might have to simplify the props passed in here
           data={{
-            title: "This is so cool mane",
+            title: "New Tab",
             id: "0",
             isLoading: false,
             url: "https://hello.com",
@@ -122,10 +126,10 @@ export default function TabBar() {
             isLoading: false,
             url: "https://hello.com",
           }}
-        /> */}
+        />
       </TabList>
       <CreateTabContainer>
-        <AiOutlinePlus size="24px"/>
+        <AiOutlinePlus size="24px" />
       </CreateTabContainer>
     </TabBarContainer>
   );
