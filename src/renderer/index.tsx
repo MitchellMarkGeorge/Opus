@@ -5,6 +5,9 @@ import { GlobalStyle } from "./style/GlobalStyle";
 import { TOP_BAR_HEIGHT } from "../common/constants";
 import { ThemeProvider } from "styled-components";
 import { darkTheme } from "./style/theme";
+import { ipcRenderer } from "electron";
+
+ipcRenderer.setMaxListeners(0);
 
 const rootElement = document.getElementById("root") as HTMLElement;
 const root = createRoot(rootElement);

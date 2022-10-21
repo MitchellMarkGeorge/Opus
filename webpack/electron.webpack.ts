@@ -27,7 +27,7 @@ const config: Configuration = {
   },
   output: {
     path: path.resolve(rootPath, "dist"),
-    filename: "[name].js",
+    filename: "main.js",
   },
 };
 

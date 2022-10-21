@@ -8,8 +8,8 @@ export function getTabBarURL() {
   }
 }
 
-export function genNewTabId() {
-  return "";
+export function getNewTabURL() {
+  return `file://${path.resolve(__dirname, "renderer/newtab.html")}`;
 }
 
 export function isDev() {

@@ -4,7 +4,11 @@ import { TAB_BAR_HEIGHT } from "../../../common/constants";
 import Tab from "./components/Tab";
 import { TrafficLightButton } from "./components/TrafficLightButton";
 import { AiOutlinePlus } from "@react-icons/all-files/ai/AiOutlinePlus";
-import { TabInfo } from "../../types";
+// import { TabInfo } from "../../types";
+import { useTopBarState } from "../../store";
+import { ipcRenderer } from "electron";
+import { CLOSE_WINDOW, MAXIMIZE_WINDOW, MINIMIZE_WINDOW } from "../../../common/messages/TrafficLightButtons";
+// import shallow from "zustand/shallow";
 
 const TabBarContainer = styled.div`
   width: 100%;
@@ -77,58 +81,71 @@ const CreateTabContainer = styled.div`
   margin-left: 5px;
 `;
 
-const genTabs = (n?: number) => {
-  if (!n) {
-    n = Math.floor(Math.random() * 10) + 1;
-  }
-  const tabs = new Array<TabInfo>(n);
+// const genTabs = (n?: number) => {
+//   if (!n) {
+//     n = Math.floor(Math.random() * 10) + 1;
+//   }
+//   const tabs = new Array<TabInfo>(n);
 
-  for (let i = 0; i < n; i++) {
-    tabs[i] = {
-      id: i.toString(),
-      title: "New Tab".repeat(i),
-      url: "https://hello.com",
-      isLoading: false,
-    };
-  }
+//   for (let i = 0; i < n; i++) {
+//     tabs[i] = {
+//       id: i.toString(),
+//       title: "New Tab".repeat(i),
+//       url: "https://hello.com",
+//       isLoading: false,
+//     };
+//   }
 
-  return tabs;
-};
+//   return tabs;
+// };
 
 export default function TabBar() {
+  // const tabs = useTopBarState(state => {state.}gcc)
+  const { tabs, selectTab, selectedTabIndex, createTab, closeTab } =
+    useTopBarState();
+
+  const closeWindow = () => {
+    ipcRenderer.send(CLOSE_WINDOW);
+  }
+
+  const minimizeWindow = () => {
+    ipcRenderer.send(MINIMIZE_WINDOW);
+  }
+  
+  const maximizeWindow = () => {
+    ipcRenderer.send(MAXIMIZE_WINDOW);
+  }
   return (
     <TabBarContainer>
       <WindowButtons>
-        <TrafficLightButton buttonColor="#D14343" />
-        <TrafficLightButton buttonColor="#FFB020" />
-        <TrafficLightButton buttonColor="#52BD95" />
+        <TrafficLightButton buttonColor="#D14343" onClick={closeWindow}/>
+        <TrafficLightButton buttonColor="#FFB020" onClick={minimizeWindow}/>
+        <TrafficLightButton buttonColor="#52BD95" onClick={maximizeWindow}/>
       </WindowButtons>
       <TabList>
+        {tabs.map((info, i) => (
+          <Tab
+            isSelected={i === selectedTabIndex}
+            data={info}
+            key={info.id}
+            // should i move this into the Tab component?
+            selectTab={() => {
+              if (i !== selectedTabIndex) {
+                selectTab(i);
+              }
+            }}
+            closeTab={() => closeTab(i)}
+          />
+        ))}
         {/* {genTabs(20).map((info, i) => (
           <Tab isSelected={i === 0} data={info} key={info.id} />
         ))} */}
-        <Tab
-          isSelected
-          // might have to simplify the props passed in here
-          data={{
-            title: "New Tab",
-            id: "0",
-            isLoading: false,
-            url: "https://hello.com",
-          }}
-        />
-        <Tab
-          isSelected={false}
-          // might have to simplify the props passed in here
-          data={{
-            title: "This is so cool mane",
-            id: "0",
-            isLoading: false,
-            url: "https://hello.com",
-          }}
-        />
       </TabList>
-      <CreateTabContainer>
+      <CreateTabContainer
+        onClick={() => {
+          createTab({ selected: true });
+        }}
+      >
         <AiOutlinePlus size="24px" />
       </CreateTabContainer>
     </TabBarContainer>

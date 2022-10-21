@@ -34,11 +34,16 @@ const NavigationIcons = styled.div`
 const SearchInput = styled.input`
   width: 100%;
   padding: 10px;
+  /* height: 2.5rem; */
   background-color: #fff;
   border-radius: 10px;
   border: none;
   outline: none;
   font-size: 16px;
+  /* height: 100%; */
+  /* color: #cecece; */
+  color: #eee;
+  background-color: ${(props) => props.theme.colors.primaryInterfaceColor};
 `;
 
 export default function SearchBar() {
@@ -61,7 +66,7 @@ export default function SearchBar() {
   return (
     <SearchBarContainer>
       {navigationIons}
-      <SearchInput placeholder="Search with Google or enter URL..."/>
+      <SearchInput autoFocus placeholder="Search with Google or enter URL..."/>
     </SearchBarContainer>
   );
 }
