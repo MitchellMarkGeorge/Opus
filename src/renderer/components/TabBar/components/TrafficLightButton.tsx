@@ -8,7 +8,6 @@ export const TrafficLightButton = styled.div<Props>`
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  transition: filter 1s;
 
   &:hover {
     filter: brightness(0.9);

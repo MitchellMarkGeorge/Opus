@@ -34,7 +34,7 @@ const TabPill = styled.div<{ isSelected: boolean }>`
     }
     return colors.secondaryInterfaceColor;
   }};
-  transition: filter 1s;
+  transition: filter 0.5s;
 
   // animation???
   &:hover {
@@ -64,7 +64,9 @@ export default function Tab({ data, isSelected, selectTab, closeTab }: Props) {
   const theme = useTheme();
   const ref = useScrollIntoView(isSelected);
   const getTabTile = () => {
-    if (data.title && data.status === "complete") return data.title;
+    // need to figure this out
+    // if (data.title && data.status === "complete") return data.title;
+    if (data.title) return data.title;
     if (data.status === "loading") return "Loading...";
     if (data.status === "error") return "Error"
     return "Unknown"; // for now
@@ -75,7 +77,10 @@ export default function Tab({ data, isSelected, selectTab, closeTab }: Props) {
         <HiGlobe color={theme.colors.primaryWhite} size="16px" />
       </GeneralIconContainer>
       <TabTitle>{getTabTile()}</TabTitle>
-      <GeneralIconContainer size="16px" onClick={closeTab}>
+      <GeneralIconContainer size="16px" onClick={(event) => {
+        event.stopPropagation();
+        closeTab();
+      }}>
         <AiOutlineClose color={theme.colors.primaryWhite} size="16px" />
       </GeneralIconContainer>
     </TabPill>

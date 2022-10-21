@@ -61,13 +61,18 @@ const TabList = styled.div`
 `;
 
 const CreateTabContainer = styled.div`
-  height: 24px;
-  width: 24px;
+  height: 32px;
+  width: 32px;
+  min-height: 32px;
+  min-width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   // think about this
   color: ${(props) => props.theme.colors.primaryWhite};
   border-radius: 50%;
 
-  transition: background-color 1s, color 1s;
+  transition: background-color 0.5s, color 0.5s;
 
   &:hover {
     background-color: ${(props) => props.theme.colors.secondaryInterfaceColor};
@@ -101,7 +106,7 @@ const CreateTabContainer = styled.div`
 
 export default function TabBar() {
   // const tabs = useTopBarState(state => {state.}gcc)
-  const { tabs, selectTab, selectedTabIndex, createTab, closeTab } =
+  const { tabs, selectTab, selectedTabId, createTab, closeTab } =
     useTopBarState();
 
   const closeWindow = () => {
@@ -123,18 +128,25 @@ export default function TabBar() {
         <TrafficLightButton buttonColor="#52BD95" onClick={maximizeWindow}/>
       </WindowButtons>
       <TabList>
-        {tabs.map((info, i) => (
+        {tabs.map((tabInfo, i) => (
           <Tab
-            isSelected={i === selectedTabIndex}
-            data={info}
-            key={info.id}
+            isSelected={tabInfo.id === selectedTabId}
+            data={tabInfo}
+            key={tabInfo.id}
             // should i move this into the Tab component?
             selectTab={() => {
-              if (i !== selectedTabIndex) {
+              if (tabInfo.id !== selectedTabId) {
+                console.log(tabInfo.id);
                 selectTab(i);
               }
             }}
-            closeTab={() => closeTab(i)}
+            closeTab={() => {
+              if (tabs.length === 1) {
+                closeWindow();
+              } else {
+                closeTab(i);
+              }
+            }}
           />
         ))}
         {/* {genTabs(20).map((info, i) => (

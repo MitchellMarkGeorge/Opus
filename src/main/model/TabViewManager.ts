@@ -1,6 +1,11 @@
 // import { ipcMain } from "electron";
 // import { CREATE_TAB_VIEW, DESTOY_TAB_VIEW, SELECT_TAB_VIEW } from "../../common/messages/Tabs";
-import { CreateTabViewOptions, DestroyTabVeiwOptions } from "../../common/types";
+import { Rectangle } from "electron";
+import { TOP_BAR_HEIGHT } from "../../common/constants";
+import {
+  CreateTabViewOptions,
+  DestroyTabVeiwOptions,
+} from "../../common/types";
 // import { TabInfo } from "../../renderer/types";
 import { TabView } from "./TabView";
 export class TabViewManager {
@@ -43,13 +48,18 @@ export class TabViewManager {
   }
 
   private getIndexFromTabId(tabId: string) {
-
-    return this.tabViews.findIndex(tabView => tabView.getId() === tabId);
+    return this.tabViews.findIndex((tabView) => tabView.getId() === tabId);
   }
 
-  public fixCurrentTabViewBounds() {
-    // TODO
-    return;
+  public fixCurrentTabViewBounds({ width, height }: Rectangle) {
+    const selectedTabView = this.getSelectedTabView();
+    const currentBrowserView = selectedTabView.getBrowserView();
+    currentBrowserView.setBounds({
+      x: 0,
+      y: TOP_BAR_HEIGHT,
+      width,
+      height: height - TOP_BAR_HEIGHT,
+    });
   }
 
   public createTabView(options: CreateTabViewOptions) {
@@ -62,6 +72,7 @@ export class TabViewManager {
     this.tabViews.push(newTabView);
     if (isSelected) {
       // so it points at the the tabview that should be selected
+      console.log(`selecting new tab view ${tabInfo.id}`);
       this.selectedTabVeiwIndex = this.tabViews.length - 1;
       return { isSelected, newSelectedTabView: this.getSelectedTabView() };
     }
@@ -70,6 +81,7 @@ export class TabViewManager {
 
   public selectTabView(tabId: string) {
     // console.log(tabId);
+    console.log("select ooo");
     console.log(`selecting tab view ${tabId}`);
     const newSelectedTabView = this.getTabViewFromTabId(tabId);
     // console.log(newSelectedTabView);
@@ -78,10 +90,11 @@ export class TabViewManager {
   }
 
   public destroyTabView(options: DestroyTabVeiwOptions) {
+    console.log(options);
     // TODO
     // let shouldQuit = false;
     // const tabView = this.getTabViewFromTabId();
-    const { deletedTabId, newSelectedTabId } = options
+    const { deletedTabId, newSelectedTabId } = options;
     // when a tab is deleted, the tabview item should be deleted
     // in the event that the selectedTab itself is deleted, the nearest tab should become the new selected tabveiw
 
@@ -91,13 +104,14 @@ export class TabViewManager {
     this.tabViews.splice(deletedTabViewIndex, 1);
 
     if (newSelectedTabId) {
-        return this.selectTabView(newSelectedTabId);
-        // this.selectedTabVeiwIndex = this.tabViews.findIndex(tabView => tabView.getId() === deletedTabId);
-        // return this.getSelectedTabView();
+      console.log("here");
+      return this.selectTabView(newSelectedTabId);
+      // this.selectedTabVeiwIndex = this.tabViews.findIndex(tabView => tabView.getId() === deletedTabId);
+      // return this.getSelectedTabView();
     } else {
-        return null;
+      return null;
     }
-    
+
     // return shouldQuit;
   }
 }

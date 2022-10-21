@@ -5,4 +5,4 @@ export const CHANGE_TAB_URL = "change-tab-url";
 export const REFRESH_TAB_URL = "refresh-tab-url";
 
 // export const TAB_TITLE_CHANGED = "tab-title-changed";
-export const TAB_LOADING_UPDATE = "tab-loading-update";
+export const TAB_UPDATE = "tab-update";

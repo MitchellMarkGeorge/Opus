@@ -1,22 +1,25 @@
 import { nanoid } from "nanoid";
 import create from "zustand";
+import { TabInfoUpdate } from "../../common/types";
 import { createTabView, destroyTabView, selectTabView } from "../services/ipc";
 import { TabInfo, TopBarState } from "../types";
 
-const defaultNewTab: TabInfo = {
+const DEFAULT_NEW_TAB: TabInfo = {
   id: nanoid(),
   // title: "New Tab",
   status: "loading",
 };
 
 export const useTopBarState = create<TopBarState>((set, get) => ({
-  tabs: [defaultNewTab] as TabInfo[],
-  selectedTabIndex: 0,
+  tabs: [DEFAULT_NEW_TAB] as TabInfo[],
+  selectedTabId: DEFAULT_NEW_TAB.id,
   selectTab: (index: number) => {
     const { tabs } = get();
+    const selectedTabId = tabs[index].id;
+    console.log(`selecting tab ${selectedTabId}`);
     // should the ipc stuff be done first???
     // ipcRenderer.send(SELECT_TAB_VIEW, tabs[index]);
-    set({ selectedTabIndex: index });
+    set({ selectedTabId });
     selectTabView(tabs[index].id);
   },
   createTab: (options: { selected: boolean; url?: string }) => {
@@ -26,31 +29,46 @@ export const useTopBarState = create<TopBarState>((set, get) => ({
       status: "loading",
       url: options.url,
     };
-    const newTabIndex = tabs.length;
+    console.log(`creating a tab ${newTab.id}`);
     // think about this
     if (options.selected) {
-      set({ tabs: [...tabs, newTab], selectedTabIndex: newTabIndex });
+        console.log(`selecting tab ${newTab.id}`);
+      set({ tabs: [...tabs, newTab], selectedTabId: newTab.id });
     } else {
       set({ tabs: [...tabs, newTab] });
     }
     createTabView({ tabInfo: newTab, isSelected: options.selected });
   },
   closeTab: (index: number) => {
-    const { tabs, selectedTabIndex } = get();
+    const { tabs, selectedTabId } = get();
     if (index >= 0 && index < tabs.length) {
       // for now, should jusnd message to quit app (chould clean up browser views tho)
-      if (tabs.length === 1) return;
+      // handles directly in the ui
+    //   if (tabs.length === 1) return;
       const tabsClone = [...tabs];
-      const [{id: deletedTabId}] = tabsClone.splice(index, 1);
-      if (selectedTabIndex === index) {
+      const [{ id: deletedTabId }] = tabsClone.splice(index, 1);
+      if (selectedTabId === deletedTabId) {
         const newSelectedIndex = index === 0 ? index : index - 1;
-        set({ tabs: tabsClone, selectedTabIndex: newSelectedIndex });
-        destroyTabView({ deletedTabId, newSelectedTabId: tabs[newSelectedIndex].id });
+        const newSelectedTabId = tabs[newSelectedIndex].id;
+        console.log(`closing tab ${deletedTabId}`);
+        console.log(`selecting tab ${newSelectedTabId}`);
+        set({ tabs: tabsClone, selectedTabId: newSelectedTabId });
+        destroyTabView({ deletedTabId, newSelectedTabId });
       } else {
+        console.log(`closing tab ${deletedTabId}`);
         set({ tabs: tabsClone });
         destroyTabView({ deletedTabId });
       }
-
     }
   },
+  updateTab: (tabId: string, updates: TabInfoUpdate) => {
+    const { tabs } = get();
+    const tabsClone = [...tabs];
+    const index = tabsClone.findIndex(tab => tab.id === tabId);
+    if (index !== -1) {
+        Object.assign(tabsClone[index], updates);
+        console.log(tabsClone[index]);
+        set({ tabs: tabsClone});
+    }
+  }
 }));

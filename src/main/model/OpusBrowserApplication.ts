@@ -21,7 +21,7 @@ export class OpusBrowserApplication {
   constructor() {
     this.mainWindow = new BrowserWindow({
       title: "Opus Web Browser",
-      width: 1000,
+      width: 1200,
       height: 750,
       minWidth: 500,
       minHeight: 325,
@@ -85,6 +85,7 @@ export class OpusBrowserApplication {
     });
 
     ipcMain.on(SELECT_TAB_VIEW, (_, tabId: string) => {
+        console.log("selecting from listener")
       // might have other options
       // should change the selectedIndex and return the new selected tabView
       const newSelectedTabView = this.tabViewManager.selectTabView(tabId);
@@ -108,16 +109,23 @@ export class OpusBrowserApplication {
   }
 
   private setCurrentBrowserViewFromTabView(tabView: TabView) {
-    console.log(tabView);
+    // console.log(tabView);
 
-    // this.mainWindow.setBrowserView(tabView.getBrowserView());
+    this.mainWindow.setBrowserView(tabView.getBrowserView());
+    this.resizeHandler();
+    // tabView.getBrowserView().setBackgroundColor("#fff");
+    // tabView.load();
+    // const bounds = this.mainWindow.getBounds();
+    // this.tabViewManager.fixCurrentTabViewBounds(bounds);
   }
 
   private resizeHandler = () => {
-    this.tabViewManager.fixCurrentTabViewBounds();
+    const bounds = this.mainWindow.getBounds();
+    this.tabViewManager.fixCurrentTabViewBounds(bounds);
   };
 
   public getMainWindow() {
     return this.mainWindow;
+
   }
 }

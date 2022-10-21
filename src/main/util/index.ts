@@ -9,6 +9,9 @@ export function getTabBarURL() {
 }
 
 export function getNewTabURL() {
+  if (isDev()) {
+    return `file://${path.resolve( __dirname, "../../../public/newtab.html")}`; 
+  }
   return `file://${path.resolve(__dirname, "renderer/newtab.html")}`;
 }
 
