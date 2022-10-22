@@ -9,12 +9,14 @@ import {
 // import { TabInfo } from "../../renderer/types";
 import { TabView } from "./TabView";
 export class TabViewManager {
+    // is the array still needed?
   private tabViews: TabView[];
   private tabViewIdMap: Map<string, TabView>; // makes sure getting by tabId is O(1)
-  private selectedTabVeiwIndex: number;
+  private selectedTabView!: TabView;
+  // should i just have a reference to the object itself????
   constructor() {
     this.tabViews = [];
-    this.selectedTabVeiwIndex = 0;
+    // this.selectedTabVeiwId = 0;
     this.tabViewIdMap = new Map<string, TabView>();
     // ipcMain.on(CREATE_TAB_VIEW, (_, options: CreateTabViewOptions) => {
     //     this.createTabView(options);
@@ -31,13 +33,11 @@ export class TabViewManager {
     // });
   }
 
-  private get selectedTabView() {
-    // think about this
-    return this.tabViews[this.selectedTabVeiwIndex];
-  }
 
   public getSelectedTabView() {
-    return this.tabViews[this.selectedTabVeiwIndex];
+    // return this.tabViews[this.selectedTabVeiwId];
+    // shouldnt be undefined... hopefully
+    return this.selectedTabView;
   }
 
   private getTabViewFromTabId(tabId: string) {
@@ -51,15 +51,11 @@ export class TabViewManager {
     return this.tabViews.findIndex((tabView) => tabView.getId() === tabId);
   }
 
-  public fixCurrentTabViewBounds({ width, height }: Rectangle) {
-    const selectedTabView = this.getSelectedTabView();
-    const currentBrowserView = selectedTabView.getBrowserView();
-    currentBrowserView.setBounds({
-      x: 0,
-      y: TOP_BAR_HEIGHT,
-      width,
-      height: height - TOP_BAR_HEIGHT,
-    });
+  public fixCurrentTabViewBounds({ width, height}: Rectangle) {
+    // const selectedTabView = this.getSelectedTabView();
+    const currentBrowserView = this.selectedTabView.getBrowserView();
+    currentBrowserView.setBounds({ x: 0, y: TOP_BAR_HEIGHT, width, height: height - TOP_BAR_HEIGHT});
+
   }
 
   public createTabView(options: CreateTabViewOptions) {
@@ -71,22 +67,23 @@ export class TabViewManager {
     this.tabViewIdMap.set(tabInfo.id, newTabView);
     this.tabViews.push(newTabView);
     if (isSelected) {
-      // so it points at the the tabview that should be selected
+      // if the the created tab is selected when created, change the windows browser view
       console.log(`selecting new tab view ${tabInfo.id}`);
-      this.selectedTabVeiwIndex = this.tabViews.length - 1;
-      return { isSelected, newSelectedTabView: this.getSelectedTabView() };
+    //   this.selectTabView = this.tabViews.length - 1;
+    this.selectedTabView = newTabView;
+      return this.selectedTabView;
     }
-    return { isSelected, newSelectedTabView: null };
+    // if the tab was just created "in the background", basically do nothing
+    return null
   }
 
   public selectTabView(tabId: string) {
     // console.log(tabId);
-    console.log("select ooo");
     console.log(`selecting tab view ${tabId}`);
-    const newSelectedTabView = this.getTabViewFromTabId(tabId);
+    this.selectedTabView = this.getTabViewFromTabId(tabId);
     // console.log(newSelectedTabView);
-    this.selectedTabVeiwIndex = this.getIndexFromTabId(tabId);
-    return newSelectedTabView;
+    // this.selectedTabVeiwId = this.getIndexFromTabId(tabId);
+    return this.selectedTabView;
   }
 
   public destroyTabView(options: DestroyTabVeiwOptions) {
@@ -104,7 +101,6 @@ export class TabViewManager {
     this.tabViews.splice(deletedTabViewIndex, 1);
 
     if (newSelectedTabId) {
-      console.log("here");
       return this.selectTabView(newSelectedTabId);
       // this.selectedTabVeiwIndex = this.tabViews.findIndex(tabView => tabView.getId() === deletedTabId);
       // return this.getSelectedTabView();

@@ -11,5 +11,6 @@ export interface DestroyTabVeiwOptions {
 }
 
 // just the fields that can be update
-export type TabInfoUpdate = Omit<Partial<TabInfo>, "url">;
+// export type TabInfoUpdate = Omit<Partial<TabInfo>, "url">;
+export type TabInfoUpdate = Partial<TabInfo>; 
 

@@ -12,12 +12,15 @@ export interface TabInfo {
 type TabStatus = "loading" | "complete" | "error" | "unknown"
 export interface TopBarState {
     tabs: TabInfo[]
-    selectedTabId: string
+    selectedTabId: string;
     // can create a tab by either clicking on th enew tab button or opening a link in a new tab
     createTab: (options: {selected: boolean, url?: string}) => void
     closeTab: (index: number) => void
     selectTab: (index: number) => void
     updateTab: (tabId: string, updates: TabInfoUpdate) => void
+
+    searchValue: string;
+    setSearchValue: (value: string) => void;
 }
 
 // export interface SearchValue {

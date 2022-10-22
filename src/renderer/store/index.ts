@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import create from "zustand";
 import { TabInfoUpdate } from "../../common/types";
+import { getNewTabURL } from "../../main/util";
 import { createTabView, destroyTabView, selectTabView } from "../services/ipc";
 import { TabInfo, TopBarState } from "../types";
 
@@ -47,9 +48,10 @@ export const useTopBarState = create<TopBarState>((set, get) => ({
     //   if (tabs.length === 1) return;
       const tabsClone = [...tabs];
       const [{ id: deletedTabId }] = tabsClone.splice(index, 1);
+      // if you are closing the selected tab
       if (selectedTabId === deletedTabId) {
         const newSelectedIndex = index === 0 ? index : index - 1;
-        const newSelectedTabId = tabs[newSelectedIndex].id;
+        const newSelectedTabId = tabsClone[newSelectedIndex].id;
         console.log(`closing tab ${deletedTabId}`);
         console.log(`selecting tab ${newSelectedTabId}`);
         set({ tabs: tabsClone, selectedTabId: newSelectedTabId });
@@ -62,13 +64,28 @@ export const useTopBarState = create<TopBarState>((set, get) => ({
     }
   },
   updateTab: (tabId: string, updates: TabInfoUpdate) => {
-    const { tabs } = get();
+    const { tabs, selectedTabId } = get();
     const tabsClone = [...tabs];
     const index = tabsClone.findIndex(tab => tab.id === tabId);
     if (index !== -1) {
         Object.assign(tabsClone[index], updates);
         console.log(tabsClone[index]);
-        set({ tabs: tabsClone});
+        if (tabId === selectedTabId && updates.url) {
+
+            console.log(updates.url) ;
+            console.log(getNewTabURL()) ;
+            if (updates.url !== getNewTabURL()) {
+                // shouldnt show the new tab url in the search bar
+                
+            // if it is the current tab that is updated and the url updates as well, update the search input value
+            set({ tabs: tabsClone, searchValue: updates.url})
+            }
+        }  else {
+            set({ tabs: tabsClone});
+        }
     }
-  }
+  }, 
+
+  searchValue: "",
+  setSearchValue: (value: string) => set({ searchValue: value}),
 }));

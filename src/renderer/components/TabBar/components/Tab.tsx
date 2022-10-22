@@ -5,6 +5,7 @@ import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
 import { HiGlobe } from "@react-icons/all-files/hi/HiGlobe";
 import { GeneralIconContainer } from "./GeneralIconContainer";
 import { useScrollIntoView } from "../../../hooks";
+import { RingLoader } from "react-spinners";
 
 interface Props {
   data: TabInfo;
@@ -16,8 +17,10 @@ interface Props {
 
 const TabPill = styled.div<{ isSelected: boolean }>`
   display: flex;
-  max-width: 150px;
-  width: 150px;
+  // this way, the tabs become smaller as the number of tabs increase
+  min-width: 150px;
+  // confirm this
+  width: 300px;
   padding: 8px 12px;
   max-height: 40px;
   /* height: 40px; */
@@ -38,11 +41,11 @@ const TabPill = styled.div<{ isSelected: boolean }>`
 
   // animation???
   &:hover {
-    filter: brightness(1.2);
+    filter: brightness(1.15);
   }
 
   &:active {
-    filter: brightness(1.4);
+    filter: brightness(1.25);
   }
 `;
 
@@ -61,7 +64,7 @@ const TabTitle = styled.div`
 // const GlobeIconContainer = styled.
 
 export default function Tab({ data, isSelected, selectTab, closeTab }: Props) {
-  const theme = useTheme();
+  const { colors } = useTheme();
   const ref = useScrollIntoView(isSelected);
   const getTabTile = () => {
     // need to figure this out
@@ -71,17 +74,27 @@ export default function Tab({ data, isSelected, selectTab, closeTab }: Props) {
     if (data.status === "error") return "Error"
     return "Unknown"; // for now
   }
+  const getTabIcon = () => {
+    if (data.status === "loading") {
+      return <RingLoader color={colors.primaryWhite} size="16px"/>
+    } else return (
+      <GeneralIconContainer size="16px" onClick={closeTab}>
+        <HiGlobe color={colors.primaryWhite} size="16px" />
+      </GeneralIconContainer>
+    )
+  }
   return (
     <TabPill isSelected={isSelected} onClick={selectTab} ref={ref}>
-      <GeneralIconContainer size="16px" onClick={closeTab}>
-        <HiGlobe color={theme.colors.primaryWhite} size="16px" />
-      </GeneralIconContainer>
+      {/* <GeneralIconContainer size="16px" onClick={closeTab}>
+        <HiGlobe color={colors.primaryWhite} size="16px" />
+      </GeneralIconContainer> */}
+      {getTabIcon()}
       <TabTitle>{getTabTile()}</TabTitle>
       <GeneralIconContainer size="16px" onClick={(event) => {
         event.stopPropagation();
         closeTab();
       }}>
-        <AiOutlineClose color={theme.colors.primaryWhite} size="16px" />
+        <AiOutlineClose color={colors.primaryWhite} size="16px" />
       </GeneralIconContainer>
     </TabPill>
   );

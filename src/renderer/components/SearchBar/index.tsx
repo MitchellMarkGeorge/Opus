@@ -6,6 +6,15 @@ import { AiOutlineArrowLeft } from "@react-icons/all-files/ai/AiOutlineArrowLeft
 import { AiOutlineArrowRight } from "@react-icons/all-files/ai/AiOutlineArrowRight";
 import { AiOutlineReload } from "@react-icons/all-files/ai/AiOutlineReload";
 import { IconContext } from "@react-icons/all-files";
+import { ipcRenderer } from "electron";
+import {
+  BACK_HISTORY,
+  FORWARD_HISTORY,
+  RELOAD_TAB,
+} from "../../../common/messages/Tabs";
+import { useTopBarState } from "../../store";
+import isURL from "validator/lib/isURL";
+import { changeCurrentViewUrl } from "../../services/ipc";
 
 const SearchBarContainer = styled.div`
   width: 100%;
@@ -42,22 +51,63 @@ const SearchInput = styled.input`
   font-size: 16px;
   /* height: 100%; */
   /* color: #cecece; */
-  color: #eee;
+  color: #ddd;
   background-color: ${(props) => props.theme.colors.primaryInterfaceColor};
 `;
 
 export default function SearchBar() {
   const { colors } = useTheme();
+  const searchValue = useTopBarState((state) => state.searchValue);
+  const setSearchValue = useTopBarState((state) => state.setSearchValue);
+
+  const reloadTab = () => {
+    ipcRenderer.send(RELOAD_TAB);
+  };
+
+  const goBackwards = () => {
+    ipcRenderer.send(BACK_HISTORY);
+  };
+
+  const goForwards = () => {
+    ipcRenderer.send(FORWARD_HISTORY);
+  };
+
+  const onEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (searchValue) {
+        if (isURL(searchValue)) {
+          if (
+            !searchValue.startsWith("https://") &&
+            !searchValue.startsWith("http://")
+          ) {
+            const newUrl = `http://${searchValue}`;
+            setSearchValue(newUrl);
+            changeCurrentViewUrl(newUrl);
+          } else {
+            changeCurrentViewUrl(searchValue);
+          }
+        } else {
+          const googleUrl = `https://google.com/search?q=${encodeURIComponent(
+            searchValue,
+          )}`;
+          setSearchValue(googleUrl);
+          changeCurrentViewUrl(googleUrl);
+        }
+        (event.target as HTMLInputElement).blur();
+      }
+    }
+  };
   const navigationIons = (
     <IconContext.Provider value={{ color: colors.primaryWhite, size: "24px" }}>
       <NavigationIcons>
-        <GeneralIconContainer size="24px">
+        <GeneralIconContainer size="24px" onClick={goBackwards}>
           <AiOutlineArrowLeft />
         </GeneralIconContainer>
-        <GeneralIconContainer size="24px">
+        <GeneralIconContainer size="24px" onClick={goForwards}>
           <AiOutlineArrowRight />
         </GeneralIconContainer>
-        <GeneralIconContainer size="24px">
+        <GeneralIconContainer size="24px" onClick={reloadTab}>
           <AiOutlineReload />
         </GeneralIconContainer>
       </NavigationIcons>
@@ -66,7 +116,13 @@ export default function SearchBar() {
   return (
     <SearchBarContainer>
       {navigationIons}
-      <SearchInput autoFocus placeholder="Search with Google or enter URL..."/>
+      <SearchInput
+        autoFocus
+        placeholder="Search with Google or enter URL..."
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
+        onKeyDown={onEnter}
+      />
     </SearchBarContainer>
   );
 }

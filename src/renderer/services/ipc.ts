@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron"
-import { CREATE_TAB_VIEW, DESTOY_TAB_VIEW, SELECT_TAB_VIEW } from "../../common/messages/Tabs"
+import { CHANGE_TAB_URL, CREATE_TAB_VIEW, DESTOY_TAB_VIEW, SELECT_TAB_VIEW } from "../../common/messages/Tabs"
 import { CreateTabViewOptions, DestroyTabVeiwOptions } from "../../common/types"
 
 export const createTabView = (options: CreateTabViewOptions) => {
@@ -14,4 +14,10 @@ export const selectTabView = (tabId: string) => {
 export const destroyTabView = (options: DestroyTabVeiwOptions) => {
     // think about params
     ipcRenderer.send(DESTOY_TAB_VIEW, options);
+}
+
+
+export const changeCurrentViewUrl = (url: string) => {
+    // think about params
+    ipcRenderer.send(CHANGE_TAB_URL, url);
 }

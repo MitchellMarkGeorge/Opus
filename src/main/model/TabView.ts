@@ -6,17 +6,19 @@ import { getNewTabURL } from "../util";
 
 export class TabView {
     private id: string;
-    private url: string;
+    // url is set in the loadPage(url);
+    private url!: string;
     private hasLoadingError: boolean;
     private browserView: BrowserView;
     constructor({ id, url }: TabInfo) {
         this.id = id;
         // think about this
-        this.url = url || getNewTabURL(); // if no url, new tab page 
+        // this.url = url || getNewTabURL(); // if no url, new tab page 
         // this.url = url || "https://google.com"; // if no url, new tab page 
 
         this.hasLoadingError = false; 
 
+        // encasulate as much functionality from this opbject (and webContents) into the TabView class itself
         this.browserView = new BrowserView({ webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -38,8 +40,7 @@ export class TabView {
             }
         });
 
-        this.browserView.webContents.on("did-fail-load", (...args) => {
-            console.log(args);
+        this.browserView.webContents.on("did-fail-load", () => {
             this.hasLoadingError = true;
             this.sendUpdateToTopBar("did-fail-load", { status: "error", title: undefined });
             // show error page?
@@ -52,6 +53,19 @@ export class TabView {
             }
             // should title be undefined???
             this.sendUpdateToTopBar("did-stop-loading", { status: "complete" });
+        });
+
+        this.browserView.webContents.on("did-navigate", (_, url) => {
+            this.url = url;
+            this.sendUpdateToTopBar("did-navigate", { url });
+        })
+
+        // do i need will-navigate, did-redirect-navigation??? 
+        this.browserView.webContents.on("did-navigate-in-page", (_, url, isMainframe) => {
+            if (isMainframe) {
+                this.url = url;
+                this.sendUpdateToTopBar("did-navigate-in-page", { url });
+            }
         })
 
         this.browserView.webContents.on("did-start-loading", () => {
@@ -72,18 +86,44 @@ export class TabView {
         //     // show error page?
         // });
         // need to think about naviagation events
-        this.browserView.setBackgroundColor("#fff")
-        this.load();
-        // this.browserView.webContents.loadURL(this.url || getNewTabURL());
+        this.browserView.setBackgroundColor("#313638");
+        this.loadURL(url || getNewTabURL());
+        // this.loadURL(url || "https://google.com");
     }
 
     public getId() {
         return this.id;
     }
 
-    public load() {
-        console.log(this.url);
+    public loadURL(url: string) {
+        if (url !== this.url) {
+            this.url = url;
+        }
+        // console.log(this.url);
         this.browserView.webContents.loadURL(this.url);
+    }
+
+    public goBackwards() {
+        if (this.browserView.webContents.canGoBack()) {
+            this.browserView.webContents.goBack();
+        }
+    }
+
+    public goForward() {
+        if (this.browserView.webContents.canGoForward()) {
+            this.browserView.webContents.goForward();
+        }
+    }
+
+    public reloadTab() {
+        if (!this.browserView.webContents.isLoading()) {
+        // if it is not already loading, reload the tab
+            this.browserView.webContents.reload();
+        }
+    }
+
+    public isLoading() {
+        return this.browserView.webContents.isLoading();
     }
 
     private sendUpdateToTopBar(eventName: string, data: TabInfoUpdate) {

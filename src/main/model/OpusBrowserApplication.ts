@@ -4,13 +4,19 @@ import {
   SELECT_TAB_VIEW,
   DESTOY_TAB_VIEW,
   CHANGE_TAB_URL,
+  RELOAD_TAB,
+  BACK_HISTORY,
+  FORWARD_HISTORY,
 } from "../../common/messages/Tabs";
 import {
   CLOSE_WINDOW,
   MAXIMIZE_WINDOW,
   MINIMIZE_WINDOW,
 } from "../../common/messages/TrafficLightButtons";
-import { CreateTabViewOptions, DestroyTabVeiwOptions } from "../../common/types";
+import {
+  CreateTabViewOptions,
+  DestroyTabVeiwOptions,
+} from "../../common/types";
 import { getTabBarURL, isDev } from "../util";
 import { TabView } from "./TabView";
 import { TabViewManager } from "./TabViewManager";
@@ -30,7 +36,7 @@ export class OpusBrowserApplication {
       fullscreenable: false,
       show: false,
       center: true,
-      // backgroundColor: "#313638",
+      backgroundColor: "#1e1e1e",
       frame: false,
       webPreferences: {
         nodeIntegration: true,
@@ -75,17 +81,15 @@ export class OpusBrowserApplication {
     });
 
     ipcMain.on(CREATE_TAB_VIEW, (_, options: CreateTabViewOptions) => {
-      const { isSelected, newSelectedTabView } =
-        this.tabViewManager.createTabView(options);
-      if (isSelected) {
-        // const selectedTabView = this.tabViewManager.getSelectedTabView();
+      const newSelectedTabView = this.tabViewManager.createTabView(options);
+      if (newSelectedTabView) {
         // if the newly created tabview is selected when created, then switch to it
         this.setCurrentBrowserViewFromTabView(newSelectedTabView);
       }
     });
 
     ipcMain.on(SELECT_TAB_VIEW, (_, tabId: string) => {
-        console.log("selecting from listener")
+      console.log("selecting from listener");
       // might have other options
       // should change the selectedIndex and return the new selected tabView
       const newSelectedTabView = this.tabViewManager.selectTabView(tabId);
@@ -99,13 +103,32 @@ export class OpusBrowserApplication {
       // only set the current browser view if a new selectd tab veiw is provided
       // else, leave the current tab view
       if (newSelectedTabView) {
-        this.setCurrentBrowserViewFromTabView(newSelectedTabView)
+        this.setCurrentBrowserViewFromTabView(newSelectedTabView);
       }
     });
 
-    ipcMain.on(CHANGE_TAB_URL, () => {
-        console.log("updated tab url")
-    })
+    ipcMain.on(CHANGE_TAB_URL, (_, url: string) => {
+      console.log("updated tab url");
+      const selectedTabView = this.tabViewManager.getSelectedTabView();
+      selectedTabView.loadURL(url);
+    });
+
+    ipcMain.on(RELOAD_TAB, () => {
+      const selectedTabView = this.tabViewManager.getSelectedTabView();
+      selectedTabView.reloadTab();
+    });
+
+    ipcMain.on(BACK_HISTORY, () => {
+      // have selectedTabView as a a member fo the class?
+      const selectedTabView = this.tabViewManager.getSelectedTabView();
+    //   console.log(selectedTabView);
+      selectedTabView.goBackwards();
+    });
+
+    ipcMain.on(FORWARD_HISTORY, () => {
+      const selectedTabView = this.tabViewManager.getSelectedTabView();
+      selectedTabView.goForward();
+    });
   }
 
   private setCurrentBrowserViewFromTabView(tabView: TabView) {
@@ -126,6 +149,5 @@ export class OpusBrowserApplication {
 
   public getMainWindow() {
     return this.mainWindow;
-
   }
 }
