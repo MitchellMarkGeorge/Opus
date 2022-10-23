@@ -97,6 +97,9 @@ export class TabViewManager {
 
     console.log(`deleting tab view ${deletedTabId}`);
     const deletedTabViewIndex = this.getIndexFromTabId(deletedTabId);
+    // use the undocumented destroy method for now
+    // https://github.com/electron/electron/issues/10096
+    (this.tabViews[deletedTabViewIndex].getBrowserView().webContents as any).destroy();
     this.tabViewIdMap.delete(deletedTabId);
     this.tabViews.splice(deletedTabViewIndex, 1);
 

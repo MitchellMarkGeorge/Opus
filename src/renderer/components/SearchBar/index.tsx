@@ -1,4 +1,4 @@
-import React from "react";
+import React, { RefObject, useRef } from "react";
 import styled, { useTheme } from "styled-components";
 import { SEARCH_BAR_HEIGHT } from "../../../common/constants";
 import { GeneralIconContainer } from "../TabBar/components/GeneralIconContainer";
@@ -15,6 +15,7 @@ import {
 import { useTopBarState } from "../../store";
 import isURL from "validator/lib/isURL";
 import { changeCurrentViewUrl } from "../../services/ipc";
+import path from "path";
 
 const SearchBarContainer = styled.div`
   width: 100%;
@@ -55,10 +56,28 @@ const SearchInput = styled.input`
   background-color: ${(props) => props.theme.colors.primaryInterfaceColor};
 `;
 
+const isOpusPage = (url: string) => {
+  const extension = path.extname(url);
+  const fileName = path.basename(url);
+  return fileName.startsWith("OPUS_") && extension === ".html";
+};
+
 export default function SearchBar() {
   const { colors } = useTheme();
   const searchValue = useTopBarState((state) => state.searchValue);
+  const tabs = useTopBarState((state) => state.tabs);
+  const selectedTabId = useTopBarState((state) => state.selectedTabId);
   const setSearchValue = useTopBarState((state) => state.setSearchValue);
+  // const focusSearchInput = useTopBarState((state) => state.focusSearchInput);
+  const inputRef = useRef<HTMLInputElement>() as RefObject<HTMLInputElement>;
+  const selectedTab = tabs.find(tab => tab.id === selectedTabId);
+
+  // useEffect(() => {
+  //   if (focusSearchInput && (inputRef.current !== document.activeElement)) {
+  //     console.log("hello");
+  //     inputRef.current?.focus();
+  //   }
+  // }, [focusSearchInput])
 
   const reloadTab = () => {
     ipcRenderer.send(RELOAD_TAB);
@@ -113,13 +132,16 @@ export default function SearchBar() {
       </NavigationIcons>
     </IconContext.Provider>
   );
+  console.log(searchValue);
   return (
     <SearchBarContainer>
       {navigationIons}
       <SearchInput
         autoFocus
         placeholder="Search with Google or enter URL..."
-        value={searchValue}
+        value={isOpusPage(searchValue) && selectedTab?.status !== "loading" ? "" : searchValue}
+        ref={inputRef}
+        spellCheck={false}
         onChange={(e) => setSearchValue(e.target.value)}
         onKeyDown={onEnter}
       />

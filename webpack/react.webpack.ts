@@ -56,11 +56,11 @@ const config: Configuration = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: path.resolve(rootPath, "public/newtab.html"),
+          from: path.resolve(rootPath, "public/opus_pages/OPUS_NEWTAB.html"),
           to: path.resolve(rootPath, "dist/renderer"),
         },
         {
-          from: path.resolve(rootPath, "public/newtab.css"),
+          from: path.resolve(rootPath, "public/opus_pages/style.css"),
           to: path.resolve(rootPath, "dist/renderer"),
         },
       ],

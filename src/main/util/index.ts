@@ -10,9 +10,16 @@ export function getTabBarURL() {
 
 export function getNewTabURL() {
   if (isDev()) {
-    return `file://${path.resolve( __dirname, "../../../public/newtab.html")}`; 
+    return `file://${path.resolve( __dirname, "../../../public/opus_pages/OPUS_NEWTAB.html")}`; 
   }
-  return `file://${path.resolve(__dirname, "renderer/newtab.html")}`;
+  return `file://${path.resolve(__dirname, "renderer/OPUS_NEWTAB.html")}`;
+}
+
+export function getErrorTabUrl() {
+  if (isDev()) {
+    return `file://${path.resolve( __dirname, "../../../public/opus_pages/OPUS_ERROR.html")}`; 
+  }
+  return `file://${path.resolve(__dirname, "renderer/OPUS_ERROR.html")}`;
 }
 
 export function isDev() {

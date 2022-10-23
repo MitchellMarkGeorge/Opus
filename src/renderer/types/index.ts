@@ -21,6 +21,8 @@ export interface TopBarState {
 
     searchValue: string;
     setSearchValue: (value: string) => void;
+    // focusSearchInput: boolean
+    // setSearchInputFocus: (isFocused: boolean) => void
 }
 
 // export interface SearchValue {

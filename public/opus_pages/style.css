@@ -1,5 +1,6 @@
 * {
     box-sizing: border-box;
+    user-select: none;
 }
 
 html, body {
@@ -26,18 +27,18 @@ body {
     width: 100%;
 }
 
-img {
+.opus-logo {
     width: 200px;
     height: 200px;
 }
 
-.browser-name {
+.main-text {
     font-weight: 590;
     font-size: 3rem;
     color: #fff;
 }
 
-.tagline {
+.secondary-text {
     font-weight: 247;
     font-size: 2rem;
     color: #cecece;
