@@ -4,8 +4,9 @@ import { TabInfoUpdate } from "../../common/types";
 import { TabInfo } from "../../renderer/types";
 import { getTabViewContextMenu } from "../menu/tabview";
 import { getErrorTabUrl, getNewTabURL } from "../util";
+import { Destroyable } from "./Destroyable";
 
-export class TabView {
+export class TabView implements Destroyable {
   private id: string;
   // url is set in the loadPage(url);
   private url!: string;
@@ -43,14 +44,17 @@ export class TabView {
     //   }
     });
 
-    this.browserView.webContents.on("did-fail-load", () => {
+    this.browserView.webContents.on("did-fail-load", (_, errorCode, errorDescription, validatedURL, isMainFrame) => {
+        if (isMainFrame) {
+
       this.hasLoadingError = true;
       this.sendUpdateToTopBar("did-fail-load", {
         status: "error",
         title: undefined,
+        url: validatedURL
       });
       this.loadURL(getErrorTabUrl());
-      // show error page?
+        }
     });
 
     this.browserView.webContents.on("did-stop-loading", () => {
@@ -103,10 +107,10 @@ export class TabView {
       });
       // show error page?
     });
-    // this.browserView.webContents.on("page-favicon-updated", (_, [faviconUrl]) => {
-    //     this.sendUpdateToTopBar(id, { status: "loading", faviconUrl });
-    //     // show error page?
-    // });
+    this.browserView.webContents.on("page-favicon-updated", (_, [faviconUrl]) => {
+        this.sendUpdateToTopBar(id, { faviconUrl });
+        // show error page?
+    });
 
     this.browserView.webContents.on("context-menu", (_, contextMenuParams) => {
       const [window] = BrowserWindow.getAllWindows();
@@ -122,6 +126,10 @@ export class TabView {
   }
 
   public loadURL(url: string) {
+    if (this.isLoading()) {
+        // stop the previous web url from loading
+        this.browserView.webContents.stop();
+    }
     if (url !== this.url) {
       this.url = url;
     }
@@ -159,5 +167,10 @@ export class TabView {
 
   public getBrowserView() {
     return this.browserView;
+  }
+
+  public destroy() {
+    (this.browserView.webContents as any).destroy();
+    // this.browserView = null;
   }
 }

@@ -10,9 +10,8 @@ import { RingLoader } from "react-spinners";
 interface Props {
   data: TabInfo;
   isSelected: boolean;
-  selectTab: () => void
-  closeTab: () => void
-
+  selectTab: () => void;
+  closeTab: () => void;
 }
 
 const TabPill = styled.div<{ isSelected: boolean }>`
@@ -61,6 +60,11 @@ const TabTitle = styled.div`
   white-space: nowrap;
 `;
 
+const FaviconImage = styled.img`
+  height: 16px;
+  width: 16px;
+`;
+
 // const GlobeIconContainer = styled.
 
 export default function Tab({ data, isSelected, selectTab, closeTab }: Props) {
@@ -71,18 +75,21 @@ export default function Tab({ data, isSelected, selectTab, closeTab }: Props) {
     // if (data.title && data.status === "complete") return data.title;
     if (data.title) return data.title;
     if (data.status === "loading") return "Loading...";
-    if (data.status === "error") return "Error"
+    if (data.status === "error") return "Error";
     return "Unknown"; // for now
-  }
+  };
   const getTabIcon = () => {
     if (data.status === "loading") {
-      return <RingLoader color={colors.primaryWhite} size="16px"/>
-    } else return (
-      <GeneralIconContainer size="16px" onClick={closeTab}>
-        <HiGlobe color={colors.primaryWhite} size="16px" />
-      </GeneralIconContainer>
-    )
-  }
+      return <RingLoader color={colors.primaryWhite} size="16px" />;
+    } else if (data.faviconUrl) {
+      return <FaviconImage src={data.faviconUrl} />;
+    } else
+      return (
+        <GeneralIconContainer size="16px" onClick={closeTab}>
+          <HiGlobe color={colors.primaryWhite} size="16px" />
+        </GeneralIconContainer>
+      );
+  };
   return (
     <TabPill isSelected={isSelected} onClick={selectTab} ref={ref}>
       {/* <GeneralIconContainer size="16px" onClick={closeTab}>
@@ -90,10 +97,13 @@ export default function Tab({ data, isSelected, selectTab, closeTab }: Props) {
       </GeneralIconContainer> */}
       {getTabIcon()}
       <TabTitle>{getTabTile()}</TabTitle>
-      <GeneralIconContainer size="16px" onClick={(event) => {
-        event.stopPropagation();
-        closeTab();
-      }}>
+      <GeneralIconContainer
+        size="16px"
+        onClick={(event) => {
+          event.stopPropagation();
+          closeTab();
+        }}
+      >
         <AiOutlineClose color={colors.primaryWhite} size="16px" />
       </GeneralIconContainer>
     </TabPill>

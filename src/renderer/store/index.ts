@@ -1,5 +1,4 @@
 import { nanoid } from "nanoid";
-import path from "path";
 import create from "zustand";
 import { TabInfoUpdate } from "../../common/types";
 import { createTabView, destroyTabView, selectTabView } from "../services/ipc";
@@ -9,12 +8,6 @@ const DEFAULT_NEW_TAB: TabInfo = {
   id: nanoid(),
   // title: "New Tab",
   status: "loading",
-};
-
-const isOpusPage = (url: string) => {
-  const extension = path.extname(url);
-  const fileName = path.basename(url);
-  return fileName.startsWith("OPUS_") && extension === ".html";
 };
 
 export const useTopBarState = create<TopBarState>((set, get) => ({
@@ -36,9 +29,10 @@ export const useTopBarState = create<TopBarState>((set, get) => ({
       //   ? ""
       //   : selectedTab.url || "", // if there is a seaech value, it shouldnt be cleared (for now)
     });
-    selectTabView(tabs[index].id);
+    selectTabView(selectedTab.id);
   },
   createTab: (options: { selected: boolean; url?: string }) => {
+    // on the creation of a new tab, the searchinput should become focused
     const { tabs } = get();
     const newTab: TabInfo = {
       id: nanoid(),

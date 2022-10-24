@@ -9,7 +9,7 @@ import {
 // import { TabInfo } from "../../renderer/types";
 import { TabView } from "./TabView";
 export class TabViewManager {
-    // is the array still needed?
+  // is the array still needed?
   private tabViews: TabView[];
   private tabViewIdMap: Map<string, TabView>; // makes sure getting by tabId is O(1)
   private selectedTabView!: TabView;
@@ -33,10 +33,7 @@ export class TabViewManager {
     // });
   }
 
-
   public getSelectedTabView() {
-    // return this.tabViews[this.selectedTabVeiwId];
-    // shouldnt be undefined... hopefully
     return this.selectedTabView;
   }
 
@@ -51,11 +48,15 @@ export class TabViewManager {
     return this.tabViews.findIndex((tabView) => tabView.getId() === tabId);
   }
 
-  public fixCurrentTabViewBounds({ width, height}: Rectangle) {
+  public fixCurrentTabViewBounds({ width, height }: Rectangle) {
     // const selectedTabView = this.getSelectedTabView();
     const currentBrowserView = this.selectedTabView.getBrowserView();
-    currentBrowserView.setBounds({ x: 0, y: TOP_BAR_HEIGHT, width, height: height - TOP_BAR_HEIGHT});
-
+    currentBrowserView.setBounds({
+      x: 0,
+      y: TOP_BAR_HEIGHT,
+      width,
+      height: height - TOP_BAR_HEIGHT,
+    });
   }
 
   public createTabView(options: CreateTabViewOptions) {
@@ -69,12 +70,12 @@ export class TabViewManager {
     if (isSelected) {
       // if the the created tab is selected when created, change the windows browser view
       console.log(`selecting new tab view ${tabInfo.id}`);
-    //   this.selectTabView = this.tabViews.length - 1;
-    this.selectedTabView = newTabView;
+      //   this.selectTabView = this.tabViews.length - 1;
+      this.selectedTabView = newTabView;
       return this.selectedTabView;
     }
     // if the tab was just created "in the background", basically do nothing
-    return null
+    return null;
   }
 
   public selectTabView(tabId: string) {
@@ -99,7 +100,7 @@ export class TabViewManager {
     const deletedTabViewIndex = this.getIndexFromTabId(deletedTabId);
     // use the undocumented destroy method for now
     // https://github.com/electron/electron/issues/10096
-    (this.tabViews[deletedTabViewIndex].getBrowserView().webContents as any).destroy();
+    this.tabViews[deletedTabViewIndex].destroy();
     this.tabViewIdMap.delete(deletedTabId);
     this.tabViews.splice(deletedTabViewIndex, 1);
 
