@@ -5,7 +5,7 @@ A simple web browser.
 
 
 ## Why create this project?
-Since I started coding acout 5 years ago, I've always wanted to build some of the software that I use daily, and a web browser is one of them. I have finally have the technical knowledge to accomplish this goal (even if the solution is a bit hacky). This project is like a "checkpoint" in my programming journey.
+Since I started coding acout 5 years ago, I've always wanted to build some of the software that I use daily, and a web browser is one of them. I have finally have the technical knowledge to accomplish this goal (even if the solution is a bit hacky). This project is like a "checkpoint" in my programming journey. I resticted myself to making this project in only 4 days to see how far I could go (so yea there are a lot of bugs but it mostly works). This project is made with React, Typescript, Zustand and Electron.
 
 ## Why is it called Opus?
 An opus refers to any artistic work, especially one on a large scale - that describes the goal of this project perfectly.
